@@ -1,0 +1,4 @@
+{
+    "connectionString": "mongodb://mongodb:27017/doctors",
+    "secret": "NPH2xmMIKI78gsIZ/BPCCpy6u6MnLbFhT4Oj1S/zky0="
+}
