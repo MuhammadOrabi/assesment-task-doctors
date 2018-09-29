@@ -1,5 +1,6 @@
-const config = require('config.json');
+const config = require('config');
 const mongoose = require('mongoose');
+
 mongoose.connect(config.connectionString, { useNewUrlParser: true });
 
 const db = mongoose.connection;
@@ -11,5 +12,5 @@ db.once('open', () => {
 });
 
 module.exports = {
-    User: require('../doctors/doctor.model')
+    Doctor: require('../doctors/doctor.model')
 };

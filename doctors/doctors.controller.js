@@ -8,8 +8,8 @@ router.post('/register', register);
 router.get('/', getAll);
 router.get('/current', getCurrent);
 router.get('/:id', getById);
-router.put('/:id', update);
-router.delete('/:id', _delete);
+router.put('/', update);
+router.delete('/', _delete);
 
 module.exports = router;
 
@@ -44,13 +44,13 @@ function getById(req, res, next) {
 }
 
 function update(req, res, next) {
-    doctorService.update(req.params.id, req.body)
+    doctorService.update(req.user.sub, req.body)
         .then(() => res.json({}))
         .catch(err => next(err));
 }
 
 function _delete(req, res, next) {
-    doctorService.delete(req.params.id)
+    doctorService.delete(req.user.sub)
         .then(() => res.json({}))
         .catch(err => next(err));
 }

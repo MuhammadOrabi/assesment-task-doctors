@@ -1,5 +1,5 @@
 const expressJwt = require('express-jwt');
-const config = require('config.json');
+const config = require('config');
 const doctorService = require('../doctors/doctor.service');
 
 module.exports = jwt;
@@ -9,8 +9,9 @@ function jwt() {
     return expressJwt({ secret, isRevoked }).unless({
         path: [
             // public routes that don't require authentication
-            '/doctors/authenticate',
-            '/doctors/register'
+            '/api/doctors/authenticate',
+            '/api/doctors/register',
+            { url: '/api/doctors', methods: ['GET']  }
         ]
     });
 }

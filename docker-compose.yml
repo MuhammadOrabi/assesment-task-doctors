@@ -10,6 +10,9 @@ services:
       - "3000:3000"
     depends_on:
       - mongodb
+    environment: 
+      - SECRET=NPH2xmMIKI78gsIZ/BPCCpy6u6MnLbFhT4Oj1S/zky0=
+      - DATABASE_URL=mongodb://mongodb:27017/doctors
   mongodb:
     image: mongo
     ports:

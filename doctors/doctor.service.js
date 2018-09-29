@@ -1,4 +1,4 @@
-const config = require('config.json');
+const config = require('config');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
@@ -43,7 +43,7 @@ async function create(doctorParam) {
 
     // hash password
     if (doctorParam.password) {
-        doctor.hash = bcrypt.doctorSync(doctorParam.password, 10);
+        doctor.hash = bcrypt.hashSync(doctorParam.password, 10);
     }
 
     // save doctor
