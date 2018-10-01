@@ -6,6 +6,7 @@ const schema = new Schema({
     hash: { type: String, required: true },
     name: { type: String, required: true },
     type: { type: String, required: true },
+    appointment_time: { type: String, required: true },
     work: [{day: String, from: String, to: String}],
     createdDate: { type: Date, default: Date.now }
 });
