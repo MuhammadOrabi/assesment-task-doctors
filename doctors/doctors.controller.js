@@ -3,7 +3,7 @@ const router = express.Router();
 const doctorService = require('./doctor.service');
 
 // routes
-router.post('/authenticate', authenticate);
+router.post('/login', authenticate);
 router.post('/register', register);
 router.get('/', getAll);
 router.get('/current', getCurrent);
