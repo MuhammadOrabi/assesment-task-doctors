@@ -21,7 +21,9 @@ function authenticate(req, res, next) {
 
 function register(req, res, next) {
     doctorService.create(req.body)
-        .then(() => res.json({}))
+        .then(() => {
+            authenticate(req, res, next);
+        })
         .catch(err => next(err));
 }
 

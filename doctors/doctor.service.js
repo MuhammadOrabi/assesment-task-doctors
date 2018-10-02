@@ -16,11 +16,10 @@ module.exports = {
 async function authenticate({ username, password }) {
     const doctor = await Doctor.findOne({ username });
     if (doctor && bcrypt.compareSync(password, doctor.hash)) {
-        const { hash, doctorWithoutHash } = doctor.toObject();
         const token = jwt.sign({ sub: doctor.id }, config.secret);
         return {
-            doctorWithoutHash,
-            token
+            id: doctor.id,
+            jwt_token: token
         };
     }
 }
