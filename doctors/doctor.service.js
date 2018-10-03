@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const Doctor = db.Doctor;
+const axios = require('axios');
+const _ = require('underscore');
 
 module.exports = {
     authenticate,
@@ -10,7 +12,8 @@ module.exports = {
     getById,
     create,
     update,
-    delete: _delete
+    delete: _delete,
+    getByIdAndAvail
 };
 
 async function authenticate({ username, password }) {
@@ -71,4 +74,17 @@ async function update(id, doctorParam) {
 
 async function _delete(id) {
     await Doctor.findByIdAndRemove(id);
+}
+
+async function getByIdAndAvail(id, day) {
+    const doctor = await Doctor.findById(id).select('work');
+    if (!doctor) throw 'Doctor not found';
+    return axios.get(`${process.env.APPOINTMENTS_API}/search/${doctor.id}`)
+    .then(res => {
+        let work = _.findWhere(doctor.work, {day: day});
+        let working_hours = _.range(parseInt(work.from), parseInt(work.to));
+        let appointments_hours = _.pluck(_.where(res.data, {Day: parseInt(day)}), 'Hour');
+        let avail = _.difference(working_hours, appointments_hours);
+        return avail;
+    }).catch(err => console.log(err));
 }

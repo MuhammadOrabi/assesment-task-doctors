@@ -11,6 +11,8 @@ router.get('/:id', getById);
 router.put('/', update);
 router.delete('/', _delete);
 
+router.get('/:id/avail/:day', getAvail);
+
 module.exports = router;
 
 function authenticate(req, res, next) {
@@ -54,5 +56,11 @@ function update(req, res, next) {
 function _delete(req, res, next) {
     doctorService.delete(req.user.sub)
         .then(() => res.json({}))
+        .catch(err => next(err));
+}
+
+function getAvail(req, res, next) {
+    doctorService.getByIdAndAvail(req.params.id,req.params.day)
+        .then(doctor => doctor ? res.json(doctor) : res.sendStatus(404))
         .catch(err => next(err));
 }
