@@ -27,7 +27,10 @@ describe('Doctors', () => {
         .then(() => {
             done();  
         })
-        .catch(err => next(err));
+        .catch(err => {
+            console.log(err);
+            done();
+        });
 
     });
     
