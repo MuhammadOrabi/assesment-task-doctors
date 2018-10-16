@@ -21,6 +21,9 @@ app.use(errorHandler);
 
 // start server
 const port = process.env.PORT ? process.env.PORT : 3000;
-const server = app.listen(port, function () {
-    console.log('Server listening on port ' + port);
-});
+if (!module.parent) { 
+    const server = app.listen(port, function () {
+        console.log('Server listening on port ' + port);
+    });
+}
+module.exports = app;

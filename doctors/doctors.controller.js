@@ -6,7 +6,6 @@ const doctorService = require('./doctor.service');
 router.post('/login', authenticate);
 router.post('/register', register);
 router.get('/', getAll);
-router.get('/current', getCurrent);
 router.get('/:id', getById);
 router.put('/', update);
 router.delete('/', _delete);
@@ -36,7 +35,7 @@ function getAll(req, res, next) {
 }
 
 function getCurrent(req, res, next) {
-    doctorService.getById(req.user.sub)
+    doctorService.getById(req.auth.sub)
         .then(doctor => doctor ? res.json(doctor) : res.sendStatus(404))
         .catch(err => next(err));
 }
@@ -48,13 +47,17 @@ function getById(req, res, next) {
 }
 
 function update(req, res, next) {
-    doctorService.update(req.user.sub, req.body)
-        .then(() => res.json({}))
+    doctorService.update(req.auth.sub, req.body)
+        .then(() => {
+            doctorService.getById(req.auth.sub)
+                .then(doctor => doctor ? res.json(doctor) : res.sendStatus(404))
+                .catch(err => next(err));
+        })
         .catch(err => next(err));
 }
 
 function _delete(req, res, next) {
-    doctorService.delete(req.user.sub)
+    doctorService.delete(req.auth.sub)
         .then(() => res.json({}))
         .catch(err => next(err));
 }

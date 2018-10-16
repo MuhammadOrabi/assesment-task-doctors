@@ -73,7 +73,7 @@ async function update(id, doctorParam) {
 }
 
 async function _delete(id) {
-    await Doctor.findByIdAndRemove(id);
+    await Doctor.findOneAndDelete(id);
 }
 
 async function getByIdAndAvail(id, day) {

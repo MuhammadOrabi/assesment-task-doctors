@@ -7,12 +7,13 @@ module.exports = jwt;
 
 function jwt() {
     const secret = config.secret;
-    return expressJwt({ secret, isRevoked }).unless({
+    return expressJwt({ secret, isRevoked ,requestProperty: 'auth' }).unless({
         path: [
             // public routes that don't require authentication
             '/api/doctors/login',
             '/api/doctors/register',
             { url: '/api/doctors', methods: ['GET']  },
+            {url: pathToRegexp('/api/doctors/:id'), methods: ['GET']},         
             {url: pathToRegexp('/api/doctors/:id/avail/:day'), methods: ['GET']},         
         ]
     });
