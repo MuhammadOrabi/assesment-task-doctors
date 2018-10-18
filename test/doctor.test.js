@@ -77,7 +77,7 @@ describe('Doctors', () => {
                 done();
             }).catch(err => {
                 throw err;
-            });;
+            });
     });
 
     it('should list a SINGLE doctor on /api/doctors/<id> GET', done => {
@@ -95,10 +95,10 @@ describe('Doctors', () => {
                         done();
                     }).catch(err => {
                         throw err;
-                    });;
+                    });
             }).catch(err => {
                 throw err;
-            });;
+            });
     });
 
     it('should update a SINGLE doctor on /api/doctors PUT', done => {
@@ -124,7 +124,7 @@ describe('Doctors', () => {
                             done();
                         }).catch(err => {
                             throw err;
-                        });;
+                        });
                 })
                 .catch(err => {
                     console.log(err);
@@ -152,7 +152,7 @@ describe('Doctors', () => {
                             done();
                         }).catch(err => {
                             throw err;
-                        });;
+                        });
                 })
                 .catch(err => {
                     console.log(err);
@@ -160,6 +160,6 @@ describe('Doctors', () => {
                 });
             }).catch(err => {
                 throw err;
-            });;
+            });
     });
 });
