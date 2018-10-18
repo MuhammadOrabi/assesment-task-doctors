@@ -7,6 +7,8 @@ const doctorService = require('doctors/doctor.service');
 const db = require('_helpers/db');
 const Doctor = db.Doctor;
 
+const expect = chai.expect;
+
 chai.use(chaiHttp);
 
 describe('Doctors', () => {
@@ -28,23 +30,27 @@ describe('Doctors', () => {
             done();  
         })
         .catch(err => {
-            console.log(err);
-            done();
+            throw err;
         });
-
     });
     
     afterEach(done => {
-        Doctor.collection.drop();
-        done();
+        try {
+            Doctor.collection.deleteMany();
+            done();
+        } catch (err) {
+            throw err;
+         }
     });
 
     it('should list ALL doctors on /api/doctors GET', done => {
         chai.request(server)
             .get('/api/doctors')
-            .end((err, res) => {
+            .then(res => {
                 res.should.have.status(200);
                 done();
+            }).catch(err => {
+                throw err;
             });
     });
     
@@ -62,37 +68,43 @@ describe('Doctors', () => {
         chai.request(server)
             .post('/api/doctors/register')
             .send(doctor)
-            .end((err, res) => {
+            .then(res => {
                 res.should.have.status(200);
                 res.should.be.json;
                 res.body.should.be.a('object');
                 res.body.should.have.property('jwt_token');
                 res.body.should.have.property('id');
                 done();
-            });
+            }).catch(err => {
+                throw err;
+            });;
     });
 
     it('should list a SINGLE doctor on /api/doctors/<id> GET', done => {
         chai.request(server)
             .get(`/api/doctors`)
-            .end((err, res) => {
+            .then(res => {
                 chai.request(server)
                     .get(`/api/doctors/${res.body[0].id}`)
-                    .end((err, res) => {
+                    .then(res => {
                         res.should.have.status(200);
                         res.should.be.json;
                         res.body.should.be.a('object');
                         res.body.should.have.property('id');
                         res.body.should.have.property('name');
                         done();
-                    });
-            });
+                    }).catch(err => {
+                        throw err;
+                    });;
+            }).catch(err => {
+                throw err;
+            });;
     });
 
     it('should update a SINGLE doctor on /api/doctors PUT', done => {
         chai.request(server)
             .get(`/api/doctors`)
-            .end((err, res) => {
+            .then(res => {
                 let username = res.body[0].username;
                 doctorService.authenticate({username, password: 'password'})
                 .then(doctor => {
@@ -103,44 +115,51 @@ describe('Doctors', () => {
                         .set('Content-Type', 'application/json')
                         .set('Accept', 'application/json')
                         .send({'name': name})
-                        .end((err, res) => {
+                        .then(res => {
                             res.should.have.status(200);
                             res.should.be.json;
                             res.body.should.be.a('object');
                             res.body.should.have.property('id');
                             res.body.should.have.property('name');
-                            // response.body.name.should.equal(name);
                             done();
-                        });
+                        }).catch(err => {
+                            throw err;
+                        });;
                 })
                 .catch(err => {
                     console.log(err);
                     done();
                 });
+            }).catch(err => {
+                throw err;
             });
     });
 
     it('should delete a SINGLE doctor on /api/doctors DELETE', done => {
         chai.request(server)
             .get(`/api/doctors`)
-            .end((err, res) => {
+            .then(res => {
                 let username = res.body[0].username;
                 doctorService.authenticate({username, password: 'password'})
                 .then(doctor => {
                     chai.request(server)
                         .delete(`/api/doctors`)
                         .set('Authorization', `Bearer ${doctor.jwt_token}`)
-                        .end((err, res) => {
+                        .then(res => {
                             res.should.have.status(200);
                             res.should.be.json;
                             res.body.should.be.a('object');
                             done();
-                        });
+                        }).catch(err => {
+                            throw err;
+                        });;
                 })
                 .catch(err => {
                     console.log(err);
                     done();
                 });
-            });
+            }).catch(err => {
+                throw err;
+            });;
     });
 });
