@@ -10,17 +10,17 @@ rabbitmq.getFromMQ('front', 'doctor.create', msg => {
         rabbitmq.sendToMQ('doctor.created', doctor);
     })
     .catch(err => {
-        rabbitmq.sendToMQ('doctor.create.error', {err: 'error!'});
+        rabbitmq.sendToMQ('doctor.create.error', {err: err});
         throw err;
     });
 });
 
 rabbitmq.getFromMQ('doctors', 'doctor.created', msg => {
     let doctor = JSON.parse(msg.content.toString());
-    console.log("[x] %s", 'doctor.created');
+    console.log("[doctor] %s", 'doctor.created');
 });
 
 
 rabbitmq.getFromMQ('doctors', 'doctor.create.error', msg => {
-    console.log("[x] %s", msg.content.toString());
+    console.log("[doctor] %s", msg.content.toString());
 });
