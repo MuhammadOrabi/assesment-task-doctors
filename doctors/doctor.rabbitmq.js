@@ -4,7 +4,7 @@ const doctorService = require('./doctor.service');
 
 rabbitmq.getFromMQ('front', 'doctor.create', msg => {
     let doctor = JSON.parse(msg.content.toString());
-    console.log("[x] %s",'doctor.create');
+    console.log("[doctor] %s",'doctor.create');
     doctorService.create(doctor)
     .then(() => {
         rabbitmq.sendToMQ('doctor.created', doctor);
@@ -15,12 +15,20 @@ rabbitmq.getFromMQ('front', 'doctor.create', msg => {
     });
 });
 
-rabbitmq.getFromMQ('doctors', 'doctor.created', msg => {
+
+rabbitmq.getFromMQ('front', 'doctor.authenticate', msg => {
     let doctor = JSON.parse(msg.content.toString());
-    console.log("[doctor] %s", 'doctor.created');
-});
-
-
-rabbitmq.getFromMQ('doctors', 'doctor.create.error', msg => {
-    console.log("[doctor] %s", msg.content.toString());
+    console.log("[doctor] %s",'doctor.authenticate');
+    doctorService.authenticate(doctor)
+    .then(doctor => {
+        if (doctor) {
+            rabbitmq.sendToMQ('doctor.authenticated', doctor);            
+        } else {
+            rabbitmq.sendToMQ('doctor.authenticate.error', {err: 'Check your credentials!'});            
+        }
+    })
+    .catch(err => {
+        rabbitmq.sendToMQ('doctor.authenticate.error', {err: err});
+        throw err;
+    });
 });
