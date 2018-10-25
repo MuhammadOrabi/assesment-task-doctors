@@ -1,13 +1,9 @@
-const amqp = require('amqplib').connect('amqp://rabbitmq:rabbitmq@rabbit1:5672');
-
-module.exports = {
-    getFromMQ,
-    sendToMQ
-};
+const publish = require('amqplib').connect('amqp://rabbitmq:rabbitmq@rabbit1:5672');
+const consume = require('amqplib').connect('amqp://rabbitmq:rabbitmq@rabbit1:5672');
 
 
 function getFromMQ(exchange, key, doAction, type='topic') {
-    amqp.then(conn => {
+    consume.then(conn => {
         return conn.createChannel();
     }).then(ch => {
         ch.assertExchange(exchange, type, {durable: false}).then(ok => {
@@ -21,7 +17,7 @@ function getFromMQ(exchange, key, doAction, type='topic') {
 }
 
 function sendToMQ(key, data, type='topic', exchange='doctors') {
-    amqp.then(conn => {
+    publish.then(conn => {
         return conn.createChannel();
     }).then(ch => {
         return ch.assertExchange(exchange, type, {durable: false}).then(ok => {
@@ -29,3 +25,8 @@ function sendToMQ(key, data, type='topic', exchange='doctors') {
         });
     }).catch(console.warn);
 }
+
+module.exports = {
+    getFromMQ,
+    sendToMQ
+};
