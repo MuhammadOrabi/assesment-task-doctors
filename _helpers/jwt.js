@@ -14,7 +14,7 @@ function jwt() {
             '/api/doctors/register',
             { url: '/api/doctors', methods: ['GET']  },
             {url: pathToRegexp('/api/doctors/:id'), methods: ['GET']},         
-            {url: pathToRegexp('/api/doctors/:id/avail/:day'), methods: ['GET']},         
+            {url: pathToRegexp('/api/doctors/:id/avail/:day'), methods: ['GET']}, 
         ]
     });
 }

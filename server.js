@@ -14,7 +14,7 @@ app.use(cors());
 app.use(jwt());
 
 // api routes
-app.use('/api/doctors', require('./doctors/doctors.controller'));
+// app.use('/api/doctors', require('./doctors/doctors.controller'));
 
 require('./doctors/doctor.rabbitmq');
 

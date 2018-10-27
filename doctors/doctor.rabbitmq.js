@@ -1,7 +1,7 @@
-const axios = require('axios');
-const _ = require('underscore');
 const rabbitmq = require('_helpers/rabbitmq');
 const doctorService = require('./doctor.service');
+const config = require('config');
+const jwt = require('jsonwebtoken');
 
 rabbitmq.getFromMQ('front', 'doctor.create', msg => {
     let doctor = JSON.parse(msg.content.toString());
@@ -15,7 +15,6 @@ rabbitmq.getFromMQ('front', 'doctor.create', msg => {
         throw err;
     });
 });
-
 
 rabbitmq.getFromMQ('front', 'doctor.authenticate', msg => {
     let doctor = JSON.parse(msg.content.toString());
@@ -48,6 +47,62 @@ rabbitmq.getFromMQ('front', 'doctor.get.all', msg => {
         rabbitmq.sendToMQ('doctor.get.all.error', {err: err});
         throw err;
     });
+});
+
+rabbitmq.getFromMQ('front', 'doctor.get.by.id', msg => {
+    let params = JSON.parse(msg.content.toString());
+    console.log("[doctor] %s",'doctor.get.by.id');
+    doctorService.getById(params.id)
+    .then(doctor => {
+        if (doctor) {
+            rabbitmq.sendToMQ('doctor.got.by.id', doctor);            
+        } else {
+            rabbitmq.sendToMQ('doctor.get.by.id.error', {err: 'something went wrong!'});            
+        }
+    })
+    .catch(err => {
+        rabbitmq.sendToMQ('doctor.get.by.id.error', {err: err});
+        throw err;
+    });
+});
+
+rabbitmq.getFromMQ('front', 'doctor.update', msg => {
+    let params = JSON.parse(msg.content.toString());
+    console.log("[doctor] %s",'doctor.update');
+    let decoded = jwt.verify(params.token, config.secret);
+
+    doctorService.update(decoded.sub, params.doctor)
+    .then(() => {
+        doctorService.getById(decoded.sub)
+            .then(doctor => {
+                if (!doctor) {
+                    return rabbitmq.sendToMQ('doctor.update.error', {err: 'Not Found!'});               
+                }
+                rabbitmq.sendToMQ('doctor.updated', doctor);
+            })
+            .catch(err => {
+                rabbitmq.sendToMQ('doctor.update.error', {err: err});
+                throw err;
+            });
+    })
+    .catch(err => {
+        rabbitmq.sendToMQ('doctor.update.error', {err: err});
+        throw err;
+    });
+});
+
+rabbitmq.getFromMQ('front', 'doctor.delete', msg => {
+    let params = JSON.parse(msg.content.toString());
+    console.log("[doctor] %s",'doctor.delete');
+    let decoded = jwt.verify(params.token, config.secret);
+    doctorService.delete(decoded.sub)
+        .then(() => {
+            rabbitmq.sendToMQ('doctor.deleted', {});
+        })
+        .catch(err => {
+            rabbitmq.sendToMQ('doctor.delete.error', {err: err});
+            throw err;
+        });
 });
 
 rabbitmq.getFromMQ('front', 'doctor.get.avail.day', async msg => {
